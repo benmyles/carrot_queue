@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "carrot_queue"
-  s.version = "0.0.0"
+  s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ben Myles"]
@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
     "README.rdoc",
     "Rakefile",
     "VERSION",
+    "carrot_queue.gemspec",
     "lib/carrot_queue.rb",
     "lib/carrot_queue/enqueue.rb",
     "lib/carrot_queue/worker.rb",
