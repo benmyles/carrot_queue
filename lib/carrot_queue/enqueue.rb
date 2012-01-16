@@ -2,7 +2,13 @@ module CarrotQueue
   module Enqueue
     module ClassMethods
       def enqueue(queue, msg)
-        queue(queue).publish(msg, :persistent => true)
+        tries = 0
+        begin
+          queue(queue).publish(msg, :persistent => true)
+        rescue Carrot::AMQP::Server::ServerDown => e
+          tries += 1; Carrot.reset
+          tries == 1 ? retry : raise(e)
+        end
       end
     end
 
