@@ -2,7 +2,7 @@ module CarrotQueue
   module Enqueue
     module ClassMethods
       def enqueue(queue, msg)
-        queue(queue).publish(msg)
+        queue(queue).publish(msg, :persistent => true)
       end
     end
 
