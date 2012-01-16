@@ -5,7 +5,7 @@ require "carrot_queue/worker"
 
 module CarrotQueue
   def self.queue(q)
-    Carrot.queue(q, :durable => true)
+    Carrot.queue(q)
   end
 
   include CarrotQueue::Enqueue
