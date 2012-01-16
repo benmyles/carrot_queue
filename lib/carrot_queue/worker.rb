@@ -29,31 +29,37 @@ module CarrotQueue
 
     def process_jobs
       while !CarrotQueue::Worker.shutdown?
-        if msg = queue[:jobs].pop(:ack => true)
-          fork do
-            @jobs_per_fork.times do |i|
-              break unless msg
+        tries = 0
+        begin
+          if msg = queue[:jobs].pop(:ack => true)
+            fork do
+              @jobs_per_fork.times do |i|
+                break unless msg
 
-              begin
-                @perform_proc.call(msg)
-              rescue Exception => e
-                queue[:retryable].publish(msg)
-                queue[:errors].publish(MultiJson.encode({
-                  msg: msg,
-                  error: { type: e.class.to_s, msg: e.message,
-                           backtrace: e.backtrace.join("\n") } }))
-              ensure
-                queue[:jobs].ack
-              end
+                begin
+                  @perform_proc.call(msg)
+                rescue Exception => e
+                  queue[:retryable].publish(msg)
+                  queue[:errors].publish(MultiJson.encode({
+                    msg: msg,
+                    error: { type: e.class.to_s, msg: e.message,
+                             backtrace: e.backtrace.join("\n") } }))
+                ensure
+                  queue[:jobs].ack
+                end
 
-              if i < (@jobs_per_fork - 1)
-                msg = queue[:jobs].pop(:ack => true)
+                if i < (@jobs_per_fork - 1)
+                  msg = queue[:jobs].pop(:ack => true)
+                end
               end
-            end
-          end # fork
-          Process.waitall
-        else
-          sleep 0.10
+            end # fork
+            Process.waitall
+          else
+            sleep 0.10
+          end
+        rescue Carrot::AMQP::Server::ServerDown => e
+          tries += 1; Carrot.reset; @queue = nil
+          tries == 1 ? retry : raise(e)
         end
       end # while
     end # def process_jobs
