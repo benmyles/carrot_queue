@@ -29,7 +29,6 @@ module CarrotQueue
 
     def process_jobs
       while !CarrotQueue::Worker.shutdown?
-        tries = 0
         begin
           if msg = queue[:jobs].pop(:ack => true)
             fork do
@@ -58,8 +57,8 @@ module CarrotQueue
             sleep 0.10
           end
         rescue Carrot::AMQP::Server::ServerDown => e
-          tries += 1; Carrot.reset; @queue = nil
-          tries == 1 ? retry : raise(e)
+          puts "[Error] #{e.class.to_s}: #{e.message}"
+          sleep(1); retry
         end
       end # while
     end # def process_jobs
