@@ -1,7 +1,12 @@
+GIT
+  remote: git://github.com/benmyles/carrot.git
+  revision: c4ebfe8db8337a42d19aff31d4f36d71089d97ea
+  specs:
+    carrot (1.2.0)
+
 GEM
   remote: http://rubygems.org/
   specs:
-    carrot (1.2.0)
     git (1.2.5)
     jeweler (1.6.4)
       bundler (~> 1.0)
@@ -17,7 +22,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.0.0)
-  carrot (~> 1.2.0)
+  carrot!
   jeweler (~> 1.6.4)
   minitest
   multi_json

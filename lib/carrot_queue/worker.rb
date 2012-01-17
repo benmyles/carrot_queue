@@ -22,9 +22,9 @@ module CarrotQueue
     end
 
     def queue
-      @queue ||= { jobs: Carrot.queue(@queue_name),
-                   errors: Carrot.queue([@queue_name, "errors"].join(".")),
-                   retryable: Carrot.queue([@queue_name, "retryable"].join(".")) }
+      @queue ||= { jobs: CarrotQueue.queue(@queue_name),
+                   errors: CarrotQueue.queue([@queue_name, "errors"].join(".")),
+                   retryable: CarrotQueue.queue([@queue_name, "retryable"].join(".")) }
     end
 
     def process_jobs
@@ -58,6 +58,7 @@ module CarrotQueue
           end
         rescue Carrot::AMQP::Server::ServerDown => e
           puts "[Error] #{e.class.to_s}: #{e.message}"
+          Carrot.reset; @queue = nil
           sleep(1); retry
         end
       end # while
